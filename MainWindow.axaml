@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dd="clr-namespace:CAEManager;assembly=CAEManager"
+        d:DataContext="{x:Static dd:DesignData.DesignViewModel}"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="CAEManager.MainWindow"
+        Title="CAEManager">
+  <Grid>
+      <DataGrid Name="MyDataGrid" Items="{Binding Revisions}">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Revision"  Binding="{Binding RevisionName}"/>
+            <DataGridTextColumn Header="State"  Binding="{Binding State}"/>
+            <DataGridTextColumn Header="Pods"  Binding="{Binding Replicas}"/>
+            <DataGridTextColumn Header="Traffic"  Binding="{Binding TrafficWeight, StringFormat=\{0\}%}"/>
+            <DataGridTextColumn Header="App"  Binding="{Binding App.Name}"/>
+            <DataGridTextColumn Header="Environment"  Binding="{Binding Environment.Name}"/>
+          </DataGrid.Columns>
+      </DataGrid>
+  </Grid>
+</Window>
