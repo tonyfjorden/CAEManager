@@ -1,6 +1,7 @@
 ﻿using CAEManager.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,12 +12,14 @@ namespace CAEManager
     {
         public static MainViewModel DesignViewModel { get; } = new MainViewModel
         {
-            Revisions = GenerateContainerRevisionData(),
+            Replicas = GenerateContainerReplicasData(),
         };
 
 
-        internal static IEnumerable<ContainerRevisionViewModel> GenerateContainerRevisionData()
+        internal static ObservableCollection<ContainerAppReplicaViewModel> GenerateContainerReplicasData()
         {
+            var result = new ObservableCollection<ContainerAppReplicaViewModel>();
+
             int apps = Random.Shared.Next(5, 10);
             for (int app = 0; app < apps; app++)
             {
@@ -24,18 +27,18 @@ namespace CAEManager
 
                 for (int revision = 0; revision < revisions; revision++)
                 {
-                    yield return new ContainerRevisionViewModel
+                    int replicas = Random.Shared.Next(1, 2);
+                    for (int replica = 0; replica < replicas; replica++)
                     {
-                        Environment = new ContainerEnvironmentViewModel { Name = "My Environment" },
-                        App = new ContainerAppViewModel { Name = $"Container App {app}" },
-                        RevisionName = $"Container App {app}-revision {revision}",
-                        IsActive = revision == 0,
-                        Replicas = Random.Shared.Next(10),
-                        State = "Provisioned",
-                        TrafficWeight = (revision == 0) ? 100 : 0
-                    };
+                        result.Add(new ContainerAppReplicaViewModel
+                        {
+                            Name = $"app_{app}_revision_{revision}"
+                        });
+                    }
                 }
-            };
+            }
+
+            return result;
         }
     }
 }
