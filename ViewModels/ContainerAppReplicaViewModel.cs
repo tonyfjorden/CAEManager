@@ -1,4 +1,5 @@
 ﻿using Azure.ResourceManager.AppContainers;
+using CAEManager.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,26 +10,30 @@ namespace CAEManager.ViewModels
 {
     public class ContainerAppReplicaViewModel
     {
-        private ContainerAppReplicaResource _resource;
+        private ContainerAppReplicaModel _replica;
 
         public ContainerAppReplicaViewModel()
         {
         }
 
-        public ContainerAppReplicaViewModel(ContainerAppReplicaResource resource)
+        public ContainerAppReplicaViewModel(ContainerAppReplicaModel replica)
         {
-            _resource = resource;
-            Id = resource.Id.ToString();
-            Name = resource.Data.Name;
+            Id = replica.Id;
+            Name = replica.Name;
+            Environment = replica.Environment;
+            _replica = replica;
         }
 
-        public string Id { get; init; }
+        public string Id { get; private set; }
 
-        public string Name { get; init; }
+        public string Name { get; set; }
 
-        internal void Update(ContainerAppReplicaResource replica)
+        public string Environment { get; set; }
+
+        internal void Update(ContainerAppReplicaModel replica)
         {
-            _resource = replica;
+            _replica = replica;
+            Name = replica.Name;
         }
     }
 }

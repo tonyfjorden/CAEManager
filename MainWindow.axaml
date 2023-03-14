@@ -8,10 +8,11 @@
         x:Class="CAEManager.MainWindow"
         Title="CAEManager">
   <Grid>
-      <DataGrid Name="MyDataGrid" Items="{Binding Replicas}">
+      <DataGrid Name="MyDataGrid" Items="{Binding Replicas}" CanUserSortColumns="True">
           <DataGrid.Columns>
             <DataGridTextColumn Header="Name"  Binding="{Binding Name}"/>
-          </DataGrid.Columns>
+			<DataGridTextColumn Header="Environment"  Binding="{Binding Environment}"/>
+		  </DataGrid.Columns>
       </DataGrid>
   </Grid>
 </Window>

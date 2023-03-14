@@ -23,13 +23,26 @@ namespace CAEManager.ViewModels
 
             _periodicTimer = new Timer(async s =>
             {
-                foreach(var replica in _caeService.ContainerAppReplicas)
+                foreach(var replica in _caeService.Replicas)
                 {
 
-                    Dispatcher.UIThread.Post(() => Replicas.Add(replica));
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        var replicaVM = Replicas.FirstOrDefault(r => r.Id == replica.Id);
+
+                        if (replicaVM == null)
+                        {
+                            Replicas.Add(new ContainerAppReplicaViewModel(replica));
+                        }
+                        else
+                        {
+                            replicaVM.Update(replica);
+                        }
+
+                    });
                 }
 
-                _periodicTimer!.Change(30000, Timeout.Infinite);
+                _periodicTimer!.Change(1000, Timeout.Infinite);
             },
             null,
             0,
