@@ -1,4 +1,5 @@
 ﻿using Azure.ResourceManager.AppContainers;
+using Azure.ResourceManager.AppContainers.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,16 +15,19 @@ namespace CAEManager.Model
         private readonly ContainerAppResource _app;
         private readonly ContainerAppManagedEnvironmentResource _environment;
 
-        public ContainerAppReplicaModel(ContainerAppReplicaResource resource, ContainerAppRevisionResource revision, ContainerAppResource app, ContainerAppManagedEnvironmentResource environment, long updateIndex)
+        public ContainerAppReplicaModel(ContainerAppReplicaResource replica, ContainerAppRevisionResource revision, ContainerAppResource app, ContainerAppManagedEnvironmentResource environment, long updateIndex)
         {
-            _resource = resource;
+            _resource = replica;
             _revision = revision;
             _app = app;
             _environment = environment;
             UpdateIndex = updateIndex;
-            Id = resource.Id.ToString();
-            Name = resource.Data.Name;
+            Id = replica.Id.ToString();
+            Name = replica.Data.Name;
             Environment = environment.Data.Name;
+            ProvisioningState = revision.Data.ProvisioningState;
+            ProvisioningError = revision.Data.ProvisioningError;
+            Containers = replica.Data.Containers.Select(c => new ContainerModel { Id = c.ContainerId?.ToString() ??  string.Empty, Name = c.Name, IsReady = c.IsReady.GetValueOrDefault(), IsStarted = c.IsStarted.GetValueOrDefault() }).ToArray();
         }
 
         public ContainerAppReplicaModel()
@@ -39,7 +43,11 @@ namespace CAEManager.Model
         public string Id { get; init; } = string.Empty;
 
         public string Name { get; init; } = string.Empty;
-        public string Environment { get; set; } = string.Empty;
+        public string Environment { get; init; } = string.Empty;
+        public ContainerAppRevisionProvisioningState? ProvisioningState { get; init; }
+        public string? ProvisioningError { get; init; } = string.Empty;
+        public IEnumerable<ContainerModel> Containers { get; init; }
+
         public long UpdateIndex { get; private set; } = 0;
     }
 }

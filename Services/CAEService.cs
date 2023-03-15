@@ -31,7 +31,7 @@ namespace CAEManager.Services
         public CAEService()
         {
             _client = new ArmClient(new DefaultAzureCredential());
-            _subscriptions = _client.GetSubscriptions().AsParallel().ToList();
+            _subscriptions = _client.GetSubscriptions().ToList();
 
             _periodicTimer = new Timer(async s =>
             {
@@ -50,11 +50,11 @@ namespace CAEManager.Services
         {
             var managedEnvironments = _subscriptions.SelectMany(s => s.GetContainerAppManagedEnvironments()).AsParallel();
 
-            var replicas = from app in _subscriptions.SelectMany(s => s.GetContainerApps()).AsParallel().Select(a => a)
+            var replicas = from app in _subscriptions.AsParallel().SelectMany(s => s.GetContainerApps()).AsParallel()
                            join environment in managedEnvironments on app.Data.ManagedEnvironmentId equals environment.Id
                            let currentEnvironment = environment
                            let currentApp = app
-                           from revision in app.GetContainerAppRevisions().AsParallel().Where(r => r.HasData && r.Data.IsActive.GetValueOrDefault())
+                           from revision in app.GetContainerAppRevisions().Where(r => r.HasData && r.Data.IsActive.GetValueOrDefault())
                            let currentRevision = revision
                            from replica in revision.GetContainerAppReplicas().Where(rep => rep.HasData)
                            select new { replica, revision = currentRevision, app = currentApp, environment = currentEnvironment };

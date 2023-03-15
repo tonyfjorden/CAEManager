@@ -32,7 +32,26 @@ namespace CAEManager
                     {
                         result.Add(new ContainerAppReplicaViewModel
                         {
-                            Name = $"app_{app}_revision_{revision}"
+                            Name = $"app_{app}_revision_{revision}",
+                            Environment="´The Environment",
+                            Containers = new[]
+                            {
+                                new ContainerViewModel
+                                {
+                                    Id="1",
+                                    Name="Container 1",
+                                    IsReady = true,
+                                    IsStarted = true
+                                },
+                                new ContainerViewModel
+                                {
+                                    Id="2",
+                                    Name="Container 2",
+                                    IsReady = false,
+                                    IsStarted = true
+                                }
+                            },
+                            ProvisioningState = "Running"
                         });
                     }
                 }

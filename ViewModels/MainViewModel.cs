@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using CAEManager.Services;
 
@@ -21,33 +22,35 @@ namespace CAEManager.ViewModels
         {
             _caeService = caeService;
 
-            _periodicTimer = new Timer(async s =>
+            if (!Design.IsDesignMode)
             {
-                foreach(var replica in _caeService.Replicas)
+                _periodicTimer = new Timer(async s =>
                 {
-
-                    Dispatcher.UIThread.Post(() =>
+                    foreach (var replica in _caeService.Replicas)
                     {
-                        var replicaVM = Replicas.FirstOrDefault(r => r.Id == replica.Id);
 
-                        if (replicaVM == null)
+                        Dispatcher.UIThread.Post(() =>
                         {
-                            Replicas.Add(new ContainerAppReplicaViewModel(replica));
-                        }
-                        else
-                        {
-                            replicaVM.Update(replica);
-                        }
+                            var replicaVM = Replicas.FirstOrDefault(r => r.Id == replica.Id);
 
-                    });
-                }
+                            if (replicaVM == null)
+                            {
+                                Replicas.Add(new ContainerAppReplicaViewModel(replica));
+                            }
+                            else
+                            {
+                                replicaVM.Update(replica);
+                            }
 
-                _periodicTimer!.Change(1000, Timeout.Infinite);
-            },
-            null,
-            0,
-            Timeout.Infinite);
-           
+                        });
+                    }
+
+                    _periodicTimer!.Change(1000, Timeout.Infinite);
+                },
+                null,
+                0,
+                Timeout.Infinite);
+            }
         }
         public ObservableCollection<ContainerAppReplicaViewModel> Replicas { get; init; } = new();
     }

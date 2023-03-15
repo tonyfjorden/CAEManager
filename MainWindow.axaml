@@ -3,16 +3,43 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dd="clr-namespace:CAEManager;assembly=CAEManager"
+		xmlns:vm="clr-namespace:CAEManager.ViewModels;assembly=CAEManager"
+		xmlns:conv="clr-namespace:CAEManager.Converters;assembly=CAEManager"
         d:DataContext="{x:Static dd:DesignData.DesignViewModel}"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CAEManager.MainWindow"
         Title="CAEManager">
-  <Grid>
-      <DataGrid Name="MyDataGrid" Items="{Binding Replicas}" CanUserSortColumns="True">
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="Name"  Binding="{Binding Name}"/>
-			<DataGridTextColumn Header="Environment"  Binding="{Binding Environment}"/>
-		  </DataGrid.Columns>
-      </DataGrid>
-  </Grid>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="25"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+		<DataGrid Grid.Row="1" Name="MyDataGrid" Items="{Binding Replicas}" CanUserSortColumns="True">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Name}"/>
+				<DataGridTextColumn Header="Environment" IsReadOnly="True" Binding="{Binding Environment}"/>
+				<DataGridTemplateColumn Header="Containers">
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate DataType="vm:ContainerAppReplicaViewModel">
+							<ItemsControl Items="{Binding Containers}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Orientation="Horizontal"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate DataType="vm:ContainerViewModel">
+										<Panel Margin="5" Height="10" Width="10" ToolTip.Tip="{Binding Name}">
+											<Rectangle Fill="{Binding IsReadyColor}" Height="10" Width="10" VerticalAlignment="Center"/>
+										</Panel>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTextColumn Header="Provisioning State" IsReadOnly="True" Binding="{Binding ProvisioningState}"/>
+			</DataGrid.Columns>
+		</DataGrid>
+	</Grid>
 </Window>
