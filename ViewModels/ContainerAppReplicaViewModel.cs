@@ -22,8 +22,8 @@ namespace CAEManager.ViewModels
             Name = replica.Name;
             Environment = replica.Environment;
             Containers = replica.Containers.Select(c=>new ContainerViewModel { Id = c.Id, Name = c.Name, IsReady = c.IsReady, IsStarted = c.IsStarted}).ToArray();
-            ProvisioningState = replica.ProvisioningState.ToString();
-            ProvisioningError = replica.ProvisioningError;
+            ProvisioningState = replica.ProvisioningState.ToString() ?? string.Empty;
+            ProvisioningError = replica.ProvisioningError ?? string.Empty;
             _replica = replica;
         }
 
@@ -43,8 +43,8 @@ namespace CAEManager.ViewModels
             _replica = replica;
             Name = replica.Name;
             Containers = replica.Containers.Select(c => new ContainerViewModel { Id = c.Id, Name = c.Name, IsReady = c.IsReady, IsStarted = c.IsStarted }).ToArray();
-            ProvisioningState = replica.ProvisioningState?.ToString();
-            ProvisioningError = replica.ProvisioningError;
+            ProvisioningState = replica.ProvisioningState?.ToString() ?? string.Empty;
+            ProvisioningError = replica.ProvisioningError ?? string.Empty;
         }
     }
 }

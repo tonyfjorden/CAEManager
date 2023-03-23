@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using CAEManager.Services;
@@ -14,7 +9,6 @@ namespace CAEManager.ViewModels
     public class MainViewModel
     {
         private readonly CAEService _caeService;
-        private readonly Timer _periodicTimer;
 
         public MainViewModel() { }
 
@@ -24,34 +18,58 @@ namespace CAEManager.ViewModels
 
             if (!Design.IsDesignMode)
             {
-                _periodicTimer = new Timer(async s =>
+                _caeService.OnReplicaAdded += (s, a) =>
                 {
-                    foreach (var replica in _caeService.Replicas)
+                    Dispatcher.UIThread.Post(() =>
                     {
+                        var replicaVM = Replicas.FirstOrDefault(r => r.Id == a.Value.Id);
 
-                        Dispatcher.UIThread.Post(() =>
+                        if (replicaVM == null)
                         {
-                            var replicaVM = Replicas.FirstOrDefault(r => r.Id == replica.Id);
+                            Replicas.Add(new ContainerAppReplicaViewModel(a.Value));
+                        }
+                    });
+                };
 
-                            if (replicaVM == null)
-                            {
-                                Replicas.Add(new ContainerAppReplicaViewModel(replica));
-                            }
-                            else
-                            {
-                                replicaVM.Update(replica);
-                            }
+                _caeService.OnReplicaRemoved += (s, a) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        var replicaVM = Replicas.FirstOrDefault(r => r.Id == a.Value.Id);
 
-                        });
-                    }
+                        if (replicaVM != null)
+                        {
+                            Replicas.Remove(replicaVM);
+                        }
+                    });
+                };
 
-                    _periodicTimer!.Change(1000, Timeout.Infinite);
-                },
-                null,
-                0,
-                Timeout.Infinite);
+                _caeService.OnReplicaUpdated += (s, a) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        var replicaVM = Replicas.FirstOrDefault(r => r.Id == a.Value.Id);
+
+                        replicaVM?.Update(a.Value);
+                    });
+                };
+
+                _caeService.OnEnvironmentAdded += (s, a) =>
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        var environment = Environments.FirstOrDefault(e => e.Id == a.Value.Id);
+
+                        if (environment == null)
+                        {
+                            Environments.Add(new ContainerEnvironmentViewModel(a.Value.Id, a.Value.Name));
+                        }
+                    });
+                };
+
             }
         }
         public ObservableCollection<ContainerAppReplicaViewModel> Replicas { get; init; } = new();
+        public ObservableCollection<ContainerEnvironmentViewModel> Environments { get; init; } = new();
     }
 }

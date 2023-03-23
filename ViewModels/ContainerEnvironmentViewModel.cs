@@ -8,6 +8,17 @@ namespace CAEManager.ViewModels
 {
     public class ContainerEnvironmentViewModel
     {
-        public string? Name { get; set; }
+        public ContainerEnvironmentViewModel(string id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        public ContainerEnvironmentViewModel()
+        {
+        }
+
+        public string Id { get; init; }
+        public string Name { get; init; }
     }
 }

@@ -13,8 +13,24 @@ namespace CAEManager
         public static MainViewModel DesignViewModel { get; } = new MainViewModel
         {
             Replicas = GenerateContainerReplicasData(),
+            Environments = GenerateEnvironments()
         };
 
+        private static ObservableCollection<ContainerEnvironmentViewModel> GenerateEnvironments()
+        {
+            var result = new ObservableCollection<ContainerEnvironmentViewModel>();
+            result.Add(new ContainerEnvironmentViewModel
+            {
+                Id = "1",
+                Name = "The Environment"
+            });
+            result.Add(new ContainerEnvironmentViewModel
+            {
+                Id = "2",
+                Name = "The Environment2"
+            });
+            return result;
+        }
 
         internal static ObservableCollection<ContainerAppReplicaViewModel> GenerateContainerReplicasData()
         {
@@ -33,7 +49,7 @@ namespace CAEManager
                         result.Add(new ContainerAppReplicaViewModel
                         {
                             Name = $"app_{app}_revision_{revision}",
-                            Environment="´The Environment",
+                            Environment="The Environment",
                             Containers = new[]
                             {
                                 new ContainerViewModel

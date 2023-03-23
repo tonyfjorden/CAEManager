@@ -9,12 +9,17 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CAEManager.MainWindow"
         Title="CAEManager">
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="25"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
-		<DataGrid Grid.Row="1" Name="MyDataGrid" Items="{Binding Replicas}" CanUserSortColumns="True">
+	<Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,*">
+		<StackPanel Orientation="Horizontal" Grid.Row="0">
+			<ComboBox Name="Environment" Items="{Binding Environments}">
+				<ComboBox.ItemTemplate>
+					<DataTemplate>
+						<TextBlock Text="{Binding Name}" FontFamily="{Binding}" />
+					</DataTemplate>
+				</ComboBox.ItemTemplate>
+			</ComboBox>
+		</StackPanel>
+		<DataGrid Grid.Row="1" Grid.Column="0" Name="MyDataGrid" Items="{Binding Replicas}" CanUserSortColumns="True">
 			<DataGrid.Columns>
 				<DataGridTextColumn Header="Name" IsReadOnly="True" Binding="{Binding Name}"/>
 				<DataGridTextColumn Header="Environment" IsReadOnly="True" Binding="{Binding Environment}"/>
@@ -41,5 +46,44 @@
 				<DataGridTextColumn Header="Provisioning State" IsReadOnly="True" Binding="{Binding ProvisioningState}"/>
 			</DataGrid.Columns>
 		</DataGrid>
+		<ContentControl Grid.Row="1" Grid.Column="1" x:DataType="vm:ContainerAppReplicaViewModel" Content="{Binding #MyDataGrid.SelectedItem}">
+			<ContentControl.ContentTemplate>
+				<DataTemplate>
+					<StackPanel Orientation="Vertical">
+						<TextBlock Text="{Binding Name}"/>
+						<TextBlock Text="Containers:"/>
+						<ComboBox Name="Containers" Items="{Binding Containers}">
+							<ComboBox.DataTemplates>
+								<DataTemplate x:DataType="vm:ContainerViewModel">
+									<TextBlock Text="{Binding Name}" />
+								</DataTemplate>
+							</ComboBox.DataTemplates>
+						</ComboBox>
+						<ContentControl Content="{Binding #Containers.SelectedItem}">
+							<ContentControl.DataTemplates>
+								<DataTemplate x:DataType="vm:ContainerViewModel">
+									<StackPanel>
+										<TextBlock>
+											<TextBlock.Text>
+												<MultiBinding StringFormat="Started: {0}">
+													<Binding Path="IsStarted"/>
+												</MultiBinding>
+											</TextBlock.Text>
+										</TextBlock>
+										<TextBlock>
+											<TextBlock.Text>
+												<MultiBinding StringFormat="Ready: {0}">
+													<Binding Path="IsReady"/>
+												</MultiBinding>
+											</TextBlock.Text>
+										</TextBlock>
+									</StackPanel>
+								</DataTemplate>
+							</ContentControl.DataTemplates>
+						</ContentControl>
+					</StackPanel>
+				</DataTemplate>
+			</ContentControl.ContentTemplate>
+		</ContentControl>
 	</Grid>
 </Window>
