@@ -30,7 +30,7 @@ namespace CAEManager.Model
             Environment = environment.Name;
             ProvisioningState = revision.Data.ProvisioningState;
             ProvisioningError = revision.Data.ProvisioningError;
-            Containers = replica.Data.Containers.Select(c => new ContainerModel { Id = c.ContainerId?.ToString() ??  string.Empty, Name = c.Name, IsReady = c.IsReady.GetValueOrDefault(), IsStarted = c.IsStarted.GetValueOrDefault() }).ToArray();
+            Containers = replica.Data.Containers.Select(c => new ContainerModel(c)).ToArray();
         }
 
         public ContainerAppReplicaModel()
@@ -46,9 +46,9 @@ namespace CAEManager.Model
             this.UpdateWithChangeCheck(ref changed, revision.Data.ProvisioningState, r => r.ProvisioningState);
             this.UpdateWithChangeCheck(ref changed, revision.Data.ProvisioningError, r => r.ProvisioningError);
 
-            var replicaContainers = replica.Data.Containers.Select(c => new ContainerModel { Id = c.ContainerId?.ToString() ?? string.Empty, Name = c.Name, IsReady = c.IsReady.GetValueOrDefault(), IsStarted = c.IsStarted.GetValueOrDefault() }).ToArray();
+            var replicaContainers = replica.Data.Containers.Select(c => new ContainerModel(c)).ToArray();
 
-            foreach(var rc in replicaContainers)
+            foreach (var rc in replicaContainers)
             {
                 var container = Containers.FirstOrDefault(c => c.Id == rc.Id);
                 if (container != null)
